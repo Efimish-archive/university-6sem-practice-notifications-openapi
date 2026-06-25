@@ -1,0 +1,23 @@
+{
+  "name": "notification-api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/index.ts",
+    "docx": "bun run src/convert.ts && pandoc docs/openapi.md -o docs/openapi.docx"
+  },
+  "dependencies": {
+    "@elysiajs/bearer": "^1.4.4",
+    "@elysiajs/cors": "^1.4.2",
+    "@elysiajs/jwt": "^1.4.2",
+    "@elysiajs/openapi": "^1.4.15",
+    "elysia": "latest",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@scalar/openapi-to-markdown": "^0.5.27",
+    "bun-types": "latest",
+    "prettier": "^3.8.4"
+  }
+}

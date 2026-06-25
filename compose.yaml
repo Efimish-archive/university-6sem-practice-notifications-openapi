@@ -1,0 +1,9 @@
+services:
+  gotify:
+    image: gotify/server
+    container_name: gotify
+    restart: unless-stopped
+    volumes:
+      - ./gotify_data:/app/data
+    ports:
+      - 0.0.0.0:80:80/tcp
