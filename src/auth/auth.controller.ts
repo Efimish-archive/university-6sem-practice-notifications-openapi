@@ -1,22 +1,28 @@
 import { Elysia } from "elysia";
 import { context } from "../context";
 import { CredentialsSchema, TokenObjectSchema } from "./auth.model";
+import { AuthService } from "./auth.service";
 
 export const authController = new Elysia({ prefix: "auth" })
   .use(context)
-  .post("login", "", {
-    detail: {
-      summary: "Вход в систему",
-      description:
-        "Аутентификация пользователя по логину и паролю с выдачей JWT-токена.",
+  .derive(({ jwt }) => ({ authSerivce: new AuthService(jwt) }))
+  .post(
+    "login",
+    ({ body, authSerivce }) => authSerivce.login(body.username, body.password),
+    {
+      detail: {
+        summary: "Вход в систему",
+        description:
+          "Аутентификация пользователя по логину и паролю с выдачей JWT-токена.",
+      },
+      parse: "application/json",
+      body: CredentialsSchema,
+      response: {
+        200: TokenObjectSchema,
+        400: "error",
+      },
     },
-    parse: "application/json",
-    body: CredentialsSchema,
-    response: {
-      200: TokenObjectSchema,
-      400: "error",
-    },
-  });
+  );
 // .post("/auth/setFirebaseToken", "", {
 //   detail: {
 //     security: [{ bearerAuth: [] }],

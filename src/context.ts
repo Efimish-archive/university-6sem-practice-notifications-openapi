@@ -2,6 +2,9 @@ import { Elysia } from "elysia";
 import { bearer } from "@elysiajs/bearer";
 import { jwt } from "@elysiajs/jwt";
 import { z } from "zod";
+import { HttpError, ErrorSchema } from "./error";
+
+const UnauthorizedError = new HttpError(401, "Вы не авторизованы");
 
 export const context = new Elysia({ name: "context" })
   .use(bearer())
@@ -17,16 +20,20 @@ export const context = new Elysia({ name: "context" })
   )
   .model({
     nothing: z.null().meta({ description: "Пустой ответ" }),
-    error: z
-      .object({
-        message: z.string().meta({
-          description:
-            "Понятное сообщение об ошибке, которое можно сразу показать пользователю в интерфейсе",
-          examples: ["Неверные данные для входа"],
-        }),
-        code: z
-          .literal([400, 401])
-          .meta({ description: "HTTP-статус ответа (код)" }),
-      })
-      .meta({ description: "Стандартный объект ошибки" }),
+    error: ErrorSchema,
+  })
+  .macro("auth", {
+    detail: {
+      security: [{ bearerAuth: [] }],
+    },
+    response: {
+      401: "error",
+    },
+    resolve: async ({ bearer, jwt }) => {
+      if (!bearer) throw UnauthorizedError;
+      const claims = await jwt.verify(bearer);
+      if (!claims) throw UnauthorizedError;
+      const userId = parseInt(claims.sub);
+      return { userId };
+    },
   });
