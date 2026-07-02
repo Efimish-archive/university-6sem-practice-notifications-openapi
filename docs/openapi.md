@@ -74,6 +74,84 @@ REST API для push-уведомлений
 }
 ```
 
+### Установать Firebase-токен пользователя
+
+- **Method:** `POST`
+- **Path:** `/auth/setFirebaseToken`
+
+Установать Firebase-токен пользователя для последующего использования при отправки уведомлений сервером. (требует авторизации)
+
+#### Request Body
+
+##### Content-Type: application/json
+
+- **`firebaseToken` (required)**
+
+  `string` — Firebase-токен пользователя
+
+**Example:**
+
+```json
+{
+  "firebaseToken": "0000000000000000_00000:00000000000000000000-0000000000000000000000000000000000000000000000000000_000000000000000000000000000-00000000000000000"
+}
+```
+
+##### Content-Type: application/x-www-form-urlencoded
+
+- **`firebaseToken` (required)**
+
+  `string` — Firebase-токен пользователя
+
+**Example:**
+
+```json
+{
+  "firebaseToken": "0000000000000000_00000:00000000000000000000-0000000000000000000000000000000000000000000000000000_000000000000000000000000000-00000000000000000"
+}
+```
+
+##### Content-Type: multipart/form-data
+
+- **`firebaseToken` (required)**
+
+  `string` — Firebase-токен пользователя
+
+**Example:**
+
+```json
+{
+  "firebaseToken": "0000000000000000_00000:00000000000000000000-0000000000000000000000000000000000000000000000000000_000000000000000000000000000-00000000000000000"
+}
+```
+
+#### Responses
+
+##### Status: 204 Response for status 204
+
+###### Content-Type: type
+
+##### Status: 401 Стандартный объект ошибки
+
+###### Content-Type: application/json
+
+- **`code` (required)**
+
+  `number`, possible values: `400, 401` — HTTP-статус ответа (код)
+
+- **`message` (required)**
+
+  `string` — Понятное сообщение об ошибке, которое можно сразу показать пользователю в интерфейсе
+
+**Example:**
+
+```json
+{
+  "message": "Неверные данные для входа",
+  "code": 400
+}
+```
+
 ### Получить уведомления
 
 - **Method:** `GET`
