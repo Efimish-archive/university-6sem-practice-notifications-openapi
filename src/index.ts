@@ -9,7 +9,6 @@ import { context } from "./context";
 
 import { authController } from "./auth/auth.controller";
 import { notificationsController } from "./notifications/notifications.controller";
-import { notificationsTestController } from "./notifications-test";
 
 const app = new Elysia()
   .use(cors())
@@ -38,7 +37,6 @@ const app = new Elysia()
   .use(context)
   .use(authController)
   .use(notificationsController)
-  .use(notificationsTestController)
   .listen(3003);
 
 console.log(
