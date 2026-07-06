@@ -1,11 +1,12 @@
 import { Elysia } from "elysia";
-import { context } from "../context";
+import { context, UnauthorizedError } from "../context";
 import {
-  NotificationIdSchema,
-  NotificationSchema,
   NotificationAmountSchema,
+  NotificationIdArraySchema,
+  NotificationArraySchema,
 } from "./notifications.model";
 import { NotificationsSerivce } from "./notifications.service";
+import { TokenObjectSchema } from "../auth/auth.model";
 
 export const notificationsController = new Elysia({ prefix: "notifications" })
   .use(context)
@@ -37,9 +38,7 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
           "Запрос списка последних непрочитанных уведомлений текущего пользователя. (требует авторизации)",
       },
       response: {
-        200: NotificationSchema.array().meta({
-          description: "Список новых уведомлений",
-        }),
+        200: NotificationArraySchema,
       },
       auth: true,
     },
@@ -54,9 +53,7 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
         description:
           "Прочитать уведомления - удалить их из списка, чтобы при запросе их больше не было",
       },
-      body: NotificationIdSchema.array().meta({
-        description: "Список идентификаторов уведомлений",
-      }),
+      body: NotificationIdArraySchema,
       response: {
         204: "nothing",
       },
@@ -69,5 +66,19 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
       description:
         "Постоянное соединение для получения новых уведомлений в реальном времени. (требует авторизации)",
     },
-    response: NotificationSchema,
+    query: TokenObjectSchema,
+    response: NotificationArraySchema,
+    // @ts-ignore
+    async beforeHandle({ jwt, query }) {
+      const claims = await jwt.verify(query.token);
+      if (!claims) throw UnauthorizedError;
+      const userId = parseInt(claims.sub);
+      return { userId };
+    },
+    async open(ws) {
+      for (let i = 0; i < 10; i++) {
+        ws.send([]);
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    },
   });

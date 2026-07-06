@@ -5,6 +5,10 @@ export const NotificationIdSchema = z.guid().meta({
   examples: ["123e4567-e89b-12d3-a456-426614174000"],
 });
 
+export const NotificationIdArraySchema = NotificationIdSchema.array().meta({
+  description: "Список идентификаторов уведомлений",
+});
+
 export const NotificationSchema = z
   .object({
     id: NotificationIdSchema,
@@ -36,6 +40,10 @@ export const NotificationSchema = z
     }),
   })
   .meta({ description: "Модель уведомления" });
+
+export const NotificationArraySchema = NotificationSchema.array().meta({
+  description: "Список новых уведомлений",
+});
 
 export const NotificationAmountSchema = z
   .int()
