@@ -5,10 +5,10 @@ import { Elysia } from "elysia";
 import { cors } from "@elysiajs/cors";
 import { openapi } from "@elysiajs/openapi";
 import { staticPlugin } from "@elysiajs/static";
-import { context } from "./context";
+import { context } from "@/context";
 
-import { authController } from "./auth/auth.controller";
-import { notificationsController } from "./notifications/notifications.controller";
+import { authController } from "@/auth/auth.controller";
+import { notificationsController } from "@/notifications/notifications.controller";
 
 const app = new Elysia()
   .use(cors())

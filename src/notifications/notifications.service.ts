@@ -2,7 +2,7 @@ import { Elysia } from "elysia";
 import type { Notification } from "./notifications.model";
 import { NatsNotificationSchema } from "./notifications.model";
 import { connect } from "@nats-io/transport-node";
-import { env } from "../env";
+import { env } from "@/env";
 
 export class NotificationsService {
   private notifications = new Map<number, Notification[]>();

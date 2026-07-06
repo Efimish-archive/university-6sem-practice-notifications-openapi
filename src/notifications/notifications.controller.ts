@@ -1,12 +1,12 @@
 import { Elysia } from "elysia";
-import { context, UnauthorizedError } from "../context";
+import { context, UnauthorizedError } from "@/context";
 import {
   NotificationAmountSchema,
   NotificationIdArraySchema,
   NotificationArraySchema,
 } from "./notifications.model";
 import { notificationsService } from "./notifications.service";
-import { TokenObjectSchema } from "../auth/auth.model";
+import { TokenObjectSchema } from "@/auth/auth.model";
 
 export const notificationsController = new Elysia({ prefix: "notifications" })
   .use(context)

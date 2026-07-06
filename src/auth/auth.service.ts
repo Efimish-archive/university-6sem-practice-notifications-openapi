@@ -1,6 +1,6 @@
 import { Elysia } from "elysia";
-import { HttpError } from "../error";
-import { context } from "../context";
+import { HttpError } from "@/error";
+import { context } from "@/context";
 
 type JWT = (typeof context)["decorator"]["jwt"];
 
