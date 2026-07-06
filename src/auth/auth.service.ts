@@ -1,3 +1,4 @@
+import { Elysia } from "elysia";
 import { HttpError } from "../error";
 import { context } from "../context";
 
@@ -38,3 +39,10 @@ export class AuthService {
     return { token };
   }
 }
+
+export const authService = new Elysia({ name: "auth.service" })
+  .use(context)
+  .decorate(({ jwt }) => {
+    const authService = new AuthService(jwt);
+    return { authService };
+  });

@@ -1,17 +1,12 @@
 import { Elysia } from "elysia";
-import { context } from "../context";
 import { CredentialsSchema, TokenObjectSchema } from "./auth.model";
-import { AuthService } from "./auth.service";
+import { authService } from "./auth.service";
 
 export const authController = new Elysia({ prefix: "auth" })
-  .use(context)
-  .derive(({ jwt }) => {
-    const authSerivce = new AuthService(jwt);
-    return { authSerivce };
-  })
+  .use(authService)
   .post(
     "login",
-    ({ body, authSerivce }) => authSerivce.login(body.username, body.password),
+    ({ body, authService }) => authService.login(body.username, body.password),
     {
       detail: {
         summary: "Вход в систему",
@@ -26,25 +21,3 @@ export const authController = new Elysia({ prefix: "auth" })
       },
     },
   );
-// .post("/auth/setFirebaseToken", "", {
-//   detail: {
-//     security: [{ bearerAuth: [] }],
-//     summary: "Установать Firebase-токен пользователя",
-//     description:
-//       "Установать Firebase-токен пользователя для последующего использования при отправки уведомлений сервером. (требует авторизации)",
-//   },
-//   body: z
-//     .object({
-//       firebaseToken: z.string().meta({
-//         description: "Firebase-токен пользователя",
-//         examples: [
-//           "0000000000000000_00000:00000000000000000000-0000000000000000000000000000000000000000000000000000_000000000000000000000000000-00000000000000000",
-//         ],
-//       }),
-//     })
-//     .meta({ description: "Firebase-сессия пользователя" }),
-//   response: {
-//     204: z.null(),
-//     401: "error",
-//   },
-// })
