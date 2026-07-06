@@ -6,6 +6,7 @@ import { env } from "@/env";
 
 export class NotificationsService {
   private notifications = new Map<number, Notification[]>();
+  private subscribers = new Map<number, (notification: Notification) => void>();
 
   async start() {
     const nc = await connect({
@@ -17,9 +18,24 @@ export class NotificationsService {
       callback: (_err, msg) => {
         const data = NatsNotificationSchema.parse(msg.json());
         console.log(`New notification: ${JSON.stringify(data, null, 2)}`);
+
+        if (this.subscribers.has(data.userId)) {
+          this.subscribers.get(data.userId)!(data.notification);
+        }
         this.addByUserId(data.userId, data.notification);
       },
     });
+  }
+
+  addSubscriber(
+    userId: number,
+    callback: (notification: Notification) => void,
+  ) {
+    this.subscribers.set(userId, callback);
+  }
+
+  removeSubscriber(userId: number) {
+    this.subscribers.delete(userId);
   }
 
   addByUserId(userId: number, notification: Notification) {
@@ -29,21 +45,21 @@ export class NotificationsService {
   }
 
   amountByUserId(userId: number) {
-    return (this.notifications.get(userId) ?? []).length;
+    return this.notifications.getOrInsert(userId, []).length;
   }
 
   listByUserId(userId: number) {
-    return (this.notifications.get(userId) ?? []).sort((a, b) =>
-      b.date.localeCompare(a.date),
-    );
+    return this.notifications
+      .getOrInsert(userId, [])
+      .sort((a, b) => b.date.localeCompare(a.date));
   }
 
   readByUserIdAndIds(userId: number, ids: string[]) {
     this.notifications.set(
       userId,
-      (this.notifications.get(userId) ?? []).filter(
-        ({ id }) => !ids.includes(id),
-      ),
+      this.notifications
+        .getOrInsert(userId, [])
+        .filter(({ id }) => !ids.includes(id)),
     );
   }
 }

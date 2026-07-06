@@ -33,7 +33,11 @@ const app = new Elysia()
       },
     }),
   )
-  .use(staticPlugin())
+  .use(
+    staticPlugin({
+      alwaysStatic: true,
+    }),
+  )
   .use(context)
   .use(authController)
   .use(notificationsController)

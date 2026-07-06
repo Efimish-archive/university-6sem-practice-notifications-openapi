@@ -69,17 +69,30 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
     },
     query: TokenObjectSchema,
     response: NotificationArraySchema,
-    // @ts-ignore
-    async beforeHandle({ jwt, query }) {
-      const claims = await jwt.verify(query.token);
+    body: NotificationIdArraySchema,
+    async open(ws) {
+      const claims = await ws.data.jwt.verify(ws.data.query.token);
       if (!claims) throw UnauthorizedError;
       const userId = parseInt(claims.sub);
-      return { userId };
+
+      ws.send(ws.data.notificationsService.listByUserId(userId));
+
+      ws.data.notificationsService.addSubscriber(userId, (notification) => {
+        ws.send([notification]);
+      });
     },
-    async open(ws) {
-      for (let i = 0; i < 10; i++) {
-        ws.send([]);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
+    async message(ws, message) {
+      const claims = await ws.data.jwt.verify(ws.data.query.token);
+      if (!claims) throw UnauthorizedError;
+      const userId = parseInt(claims.sub);
+
+      ws.data.notificationsService.readByUserIdAndIds(userId, message);
+    },
+    async close(ws) {
+      const claims = await ws.data.jwt.verify(ws.data.query.token);
+      if (!claims) throw UnauthorizedError;
+      const userId = parseInt(claims.sub);
+
+      ws.data.notificationsService.removeSubscriber(userId);
     },
   });

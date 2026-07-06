@@ -1,0 +1,155 @@
+<!doctype html>
+<html class="bg-orange-300" lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/daisyui@5" />
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <title>Secret Dashboard</title>
+  </head>
+  <body>
+    <main class="mx-auto max-w-3xl p-4">
+      <h1 class="text-3xl font-bold my-4">Secret Dashboard</h1>
+
+      <article class="card bg-blue-100 p-4 my-4">
+        <h2 class="text-xl font-bold">Auth Token</h2>
+        <textarea
+          class="textarea w-full"
+          id="token-textarea"
+          placeholder="*****"
+          disabled
+        ></textarea>
+      </article>
+
+      <article class="card bg-blue-100 p-4 my-4">
+        <h2 class="text-xl font-bold">POST /auth/login</h2>
+        <form id="post-auth-login-form">
+          <div class="flex w-full mb-2">
+            <fieldset class="fieldset w-full">
+              <legend class="fieldset-legend">Username</legend>
+              <input type="text" class="input" name="username" value="Kira" />
+            </fieldset>
+            <fieldset class="fieldset w-full">
+              <legend class="fieldset-legend">Password</legend>
+              <input
+                type="password"
+                class="input"
+                name="password"
+                value="12345678"
+              />
+            </fieldset>
+          </div>
+          <input class="btn" type="submit" value="Login" />
+        </form>
+      </article>
+
+      <article class="card bg-blue-100 p-4 my-4">
+        <h2 class="text-xl font-bold">GET /notifications/amount</h2>
+        <p>WIP</p>
+      </article>
+
+      <article class="card bg-blue-100 p-4 my-4">
+        <h2 class="text-xl font-bold">GET /notifications/list</h2>
+        <button class="btn mb-2" id="get-notifications-list-button">GET</button>
+        <textarea
+          class="textarea w-full h-120"
+          id="get-notifications-list-textarea"
+          placeholder="[]"
+          disabled
+        ></textarea>
+      </article>
+
+      <article class="card bg-blue-100 p-4 my-4">
+        <h2 class="text-xl font-bold">POST /notifications/read</h2>
+        <p>WIP</p>
+      </article>
+
+      <article class="card bg-blue-100 p-4 my-4">
+        <h2 class="text-xl font-bold">WS /notifications/listen</h2>
+        <button class="btn mb-2" id="ws-notifications-listen-button">
+          Listen
+        </button>
+        <textarea
+          class="textarea w-full h-120"
+          id="ws-notifications-listen-textarea"
+          disabled
+        ></textarea>
+      </article>
+    </main>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const origin = window.location.origin;
+
+      const tokenTextArea = document.getElementById("token-textarea");
+      const postAuthLoginForm = document.getElementById("post-auth-login-form");
+      const getNotificationsListButton = document.getElementById(
+        "get-notifications-list-button",
+      );
+      const getNotificationsListTextArea = document.getElementById(
+        "get-notifications-list-textarea",
+      );
+      const wsNotificationsListenButton = document.getElementById(
+        "ws-notifications-listen-button",
+      );
+      const wsNotificationsListenTextArea = document.getElementById(
+        "ws-notifications-listen-textarea",
+      );
+
+      postAuthLoginForm.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const formData = new FormData(postAuthLoginForm);
+        const dataObject = Object.fromEntries(formData.entries());
+        const response = await fetch(new URL("/auth/login", origin), {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(dataObject),
+        });
+        const result = await response.json();
+        const token = result.token;
+        tokenTextArea.value = token;
+      });
+
+      getNotificationsListButton.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        const response = await fetch(new URL("/notifications/list", origin), {
+          headers: {
+            Authorization: `Bearer ${tokenTextArea.value}`,
+          },
+        });
+        const result = await response.json();
+        getNotificationsListTextArea.value = JSON.stringify(result, null, 2);
+      });
+
+      wsNotificationsListenButton.addEventListener("click", async (ev) => {
+        ev.preventDefault();
+        const url = new URL(
+          `/notifications/listen?token=${tokenTextArea.value}`,
+          origin,
+        );
+        url.protocol = "ws";
+        const socket = new WebSocket(url);
+
+        socket.addEventListener("open", (event) => {
+          wsNotificationsListenTextArea.value =
+            "Connected to the WebSocket server.";
+          // socket.send("привет");
+        });
+        socket.addEventListener("message", (event) => {
+          wsNotificationsListenTextArea.value =
+            "Message from server: " + event.data;
+        });
+        socket.addEventListener("error", (error) => {
+          wsNotificationsListenTextArea.value = "WebSocket Error: " + error;
+        });
+        socket.addEventListener("close", (event) => {
+          wsNotificationsListenTextArea.value =
+            "Connection closed: " + event.reason;
+        });
+      });
+    });
+  </script>
+</html>
