@@ -1,31 +1,10 @@
+import { Elysia } from "elysia";
 import type { Notification } from "./notifications.model";
 import { NatsNotificationSchema } from "./notifications.model";
 import { connect } from "@nats-io/transport-node";
 import { env } from "../env";
 
-// import { randomUUID } from "crypto";
-
-// const createNotification = (): Notification => {
-//   const id = randomUUID();
-//   const now = new Date();
-//   return {
-//     id,
-//     date: now.toISOString(),
-//     priority: "high",
-//     icon: "http://192.168.10.20:3003/public/icon.png",
-//     title: `Уведомление ${id}`,
-//     body: `Время сейчас: ${now.toLocaleString("ru")}`,
-//   };
-// };
-
-// const createNotifications = (amount: number): Notification[] => {
-//   const notifications = [];
-//   while (notifications.length < amount)
-//     notifications.push(createNotification());
-//   return notifications;
-// };
-
-export class NotificationsSerivce {
+export class NotificationsService {
   private notifications = new Map<number, Notification[]>();
 
   async start() {
@@ -36,10 +15,9 @@ export class NotificationsSerivce {
 
     nc.subscribe("notifications", {
       callback: (_err, msg) => {
-        const { userId, notification } = NatsNotificationSchema.parse(
-          msg.json(),
-        );
-        this.addByUserId(userId, notification);
+        const data = NatsNotificationSchema.parse(msg.json());
+        console.log(`New notification: ${JSON.stringify(data, null, 2)}`);
+        this.addByUserId(data.userId, data.notification);
       },
     });
   }
@@ -69,3 +47,11 @@ export class NotificationsSerivce {
     );
   }
 }
+
+export const notificationsService = new Elysia({
+  name: "notifications.service",
+}).decorate(() => {
+  const notificationsService = new NotificationsService();
+  notificationsService.start();
+  return { notificationsService };
+});

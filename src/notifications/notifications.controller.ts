@@ -5,16 +5,13 @@ import {
   NotificationIdArraySchema,
   NotificationArraySchema,
 } from "./notifications.model";
-import { NotificationsSerivce } from "./notifications.service";
+import { notificationsService } from "./notifications.service";
 import { TokenObjectSchema } from "../auth/auth.model";
 
 export const notificationsController = new Elysia({ prefix: "notifications" })
   .use(context)
-  .derive(async () => {
-    const notificationsService = new NotificationsSerivce();
-    await notificationsService.start();
-    return { notificationsService };
-  })
+  .use(notificationsService)
+  .decorate({ notificationsService })
   .get(
     "amount",
     ({ userId, notificationsService }) =>

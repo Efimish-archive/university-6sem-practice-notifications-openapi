@@ -58,3 +58,5 @@ export const NatsNotificationSchema = z.object({
   userId: z.int().min(0),
   notification: NotificationSchema,
 });
+
+export type NatsNotification = z.infer<typeof NatsNotificationSchema>;
