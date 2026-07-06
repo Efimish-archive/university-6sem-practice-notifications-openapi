@@ -1,19 +1,13 @@
 import { Elysia } from "elysia";
 import type { Notification, Pagination } from "./notifications.model";
 import { NatsNotificationSchema } from "./notifications.model";
-import { connect } from "@nats-io/transport-node";
-import { env } from "@/env";
+import { nc } from "@/nats";
 
 export class NotificationsService {
   private notifications = new Map<number, Notification[]>();
   private subscribers = new Map<number, (notification: Notification) => void>();
 
-  async start() {
-    const nc = await connect({
-      servers: "127.0.0.1:4222",
-      token: env.NATS_TOKEN,
-    });
-
+  constructor() {
     nc.subscribe("notifications", {
       callback: (_err, msg) => {
         const data = NatsNotificationSchema.parse(msg.json());
@@ -71,6 +65,5 @@ export const notificationsService = new Elysia({
   name: "notifications.service",
 }).decorate(() => {
   const notificationsService = new NotificationsService();
-  notificationsService.start();
   return { notificationsService };
 });

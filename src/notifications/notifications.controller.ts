@@ -8,6 +8,7 @@ import {
 } from "./notifications.model";
 import { notificationsService } from "./notifications.service";
 import { TokenObjectSchema } from "@/auth/auth.model";
+import { sendFakeNotification } from "@/nats";
 
 export const notificationsController = new Elysia({ prefix: "notifications" })
   .use(context)
@@ -97,4 +98,18 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
 
       ws.data.notificationsService.removeSubscriber(userId);
     },
-  });
+  })
+  // TODO: remove
+  .get(
+    "fake",
+    async () => {
+      await sendFakeNotification();
+      return null;
+    },
+    {
+      detail: {
+        summary: "Отправить уведомление пользовтелю 1 (тест)",
+      },
+      response: "nothing",
+    },
+  );
