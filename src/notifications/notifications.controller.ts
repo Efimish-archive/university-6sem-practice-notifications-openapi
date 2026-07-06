@@ -4,6 +4,7 @@ import {
   NotificationAmountSchema,
   NotificationIdArraySchema,
   NotificationArraySchema,
+  PaginationSchema,
 } from "./notifications.model";
 import { notificationsService } from "./notifications.service";
 import { TokenObjectSchema } from "@/auth/auth.model";
@@ -30,14 +31,15 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
   )
   .get(
     "list",
-    ({ userId, notificationsService }) =>
-      notificationsService.listByUserId(userId),
+    ({ query, userId, notificationsService }) =>
+      notificationsService.listByUserId(userId, query),
     {
       detail: {
         summary: "Получить новые уведомления",
         description:
           "Запрос списка последних непрочитанных уведомлений текущего пользователя. (требует авторизации)",
       },
+      query: PaginationSchema,
       response: {
         200: NotificationArraySchema,
       },

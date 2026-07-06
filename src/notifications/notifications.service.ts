@@ -1,5 +1,5 @@
 import { Elysia } from "elysia";
-import type { Notification } from "./notifications.model";
+import type { Notification, Pagination } from "./notifications.model";
 import { NatsNotificationSchema } from "./notifications.model";
 import { connect } from "@nats-io/transport-node";
 import { env } from "@/env";
@@ -48,10 +48,13 @@ export class NotificationsService {
     return this.notifications.getOrInsert(userId, []).length;
   }
 
-  listByUserId(userId: number) {
-    return this.notifications
+  listByUserId(userId: number, pagination?: Pagination) {
+    const list = this.notifications
       .getOrInsert(userId, [])
       .sort((a, b) => b.date.localeCompare(a.date));
+
+    if (typeof pagination === "undefined") return list;
+    return list.slice(pagination.offset, pagination.offset + pagination.limit);
   }
 
   readByUserIdAndIds(userId: number, ids: string[]) {
