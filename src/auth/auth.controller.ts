@@ -5,7 +5,10 @@ import { AuthService } from "./auth.service";
 
 export const authController = new Elysia({ prefix: "auth" })
   .use(context)
-  .derive(({ jwt }) => ({ authSerivce: new AuthService(jwt) }))
+  .derive(({ jwt }) => {
+    const authSerivce = new AuthService(jwt);
+    return { authSerivce };
+  })
   .post(
     "login",
     ({ body, authSerivce }) => authSerivce.login(body.username, body.password),

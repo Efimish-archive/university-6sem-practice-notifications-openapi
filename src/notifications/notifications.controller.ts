@@ -10,7 +10,11 @@ import { TokenObjectSchema } from "../auth/auth.model";
 
 export const notificationsController = new Elysia({ prefix: "notifications" })
   .use(context)
-  .decorate({ notificationsService: new NotificationsSerivce() })
+  .derive(async () => {
+    const notificationsService = new NotificationsSerivce();
+    await notificationsService.start();
+    return { notificationsService };
+  })
   .get(
     "amount",
     ({ userId, notificationsService }) =>

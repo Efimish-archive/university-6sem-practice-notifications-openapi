@@ -51,3 +51,10 @@ export const NotificationAmountSchema = z
   .meta({ description: "Количество новых уведомлений" });
 
 export type Notification = z.infer<typeof NotificationSchema>;
+
+// NATS
+
+export const NatsNotificationSchema = z.object({
+  userId: z.int().min(0),
+  notification: NotificationSchema,
+});

@@ -2,6 +2,7 @@ import { Elysia } from "elysia";
 import { bearer } from "@elysiajs/bearer";
 import { jwt } from "@elysiajs/jwt";
 import { z } from "zod";
+import { env } from "./env";
 import { HttpError, ErrorSchema } from "./error";
 
 export const UnauthorizedError = new HttpError(401, "Вы не авторизованы");
@@ -11,7 +12,7 @@ export const context = new Elysia({ name: "context" })
   .use(
     jwt({
       name: "jwt",
-      secret: process.env.JWT_SECRET!,
+      secret: env.JWT_SECRET,
       exp: "365d",
       schema: z.object({
         sub: z.string(),
