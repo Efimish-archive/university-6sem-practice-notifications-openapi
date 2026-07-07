@@ -34,7 +34,7 @@ export const context = new Elysia({ name: "context" })
       if (!bearer) throw UnauthorizedError;
       const claims = await jwt.verify(bearer);
       if (!claims) throw UnauthorizedError;
-      const userId = parseInt(claims.sub);
+      const userId = Number(claims.sub);
       return { userId };
     },
   });

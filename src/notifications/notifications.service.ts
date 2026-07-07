@@ -13,9 +13,8 @@ export class NotificationsService {
         const data = NatsNotificationSchema.parse(msg.json());
         console.log(`New notification: ${JSON.stringify(data, null, 2)}`);
 
-        if (this.subscribers.has(data.userId)) {
-          this.subscribers.get(data.userId)!(data.notification);
-        }
+        const subscriber = this.subscribers.get(data.userId);
+        if (subscriber) subscriber(data.notification);
         this.addByUserId(data.userId, data.notification);
       },
     });

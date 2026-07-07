@@ -76,7 +76,7 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
     async open(ws) {
       const claims = await ws.data.jwt.verify(ws.data.query.token);
       if (!claims) throw UnauthorizedError;
-      const userId = parseInt(claims.sub);
+      const userId = Number(claims.sub);
 
       ws.send(ws.data.notificationsService.listByUserId(userId));
 
@@ -87,14 +87,14 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
     async message(ws, message) {
       const claims = await ws.data.jwt.verify(ws.data.query.token);
       if (!claims) throw UnauthorizedError;
-      const userId = parseInt(claims.sub);
+      const userId = Number(claims.sub);
 
       ws.data.notificationsService.readByUserIdAndIds(userId, message);
     },
     async close(ws) {
       const claims = await ws.data.jwt.verify(ws.data.query.token);
       if (!claims) throw UnauthorizedError;
-      const userId = parseInt(claims.sub);
+      const userId = Number(claims.sub);
 
       ws.data.notificationsService.removeSubscriber(userId);
     },
