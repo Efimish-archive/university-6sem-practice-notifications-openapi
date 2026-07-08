@@ -33,7 +33,7 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
   .get(
     "list",
     ({ query, userId, notificationsService }) =>
-      notificationsService.listByUserId(userId, query),
+      notificationsService.listByUserId(userId, query.limit),
     {
       detail: {
         summary: "Получить новые уведомления",
@@ -78,7 +78,7 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
       if (!claims) throw UnauthorizedError;
       const userId = Number(claims.sub);
 
-      ws.send(ws.data.notificationsService.listByUserId(userId));
+      // ws.send(ws.data.notificationsService.listByUserId(userId));
 
       ws.data.notificationsService.addSubscriber(userId, (notification) => {
         ws.send([notification]);
@@ -103,7 +103,7 @@ export const notificationsController = new Elysia({ prefix: "notifications" })
   .get(
     "fake",
     async () => {
-      await sendFakeNotification();
+      // await sendFakeNotification();
       return null;
     },
     {

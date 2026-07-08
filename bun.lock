@@ -10,6 +10,7 @@
         "@elysiajs/jwt": "^1.4.2",
         "@elysiajs/openapi": "^1.4.15",
         "@elysiajs/static": "^1.4.10",
+        "@nats-io/jetstream": "^3.4.0",
         "@nats-io/transport-node": "^3.4.0",
         "elysia": "latest",
         "zod": "^4.4.3",
@@ -66,6 +67,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
+
+    "@nats-io/jetstream": ["@nats-io/jetstream@3.4.0", "", { "dependencies": { "@nats-io/nats-core": "3.4.0" } }, "sha512-GzHQodNJ942+R5LRb8PuZ5ugVWVWMRiufxUYLLVWkXKfwDXYN+Owo0d7L/b9O7BPyrbYD7jQWAC6+ZVuXa9Gyw=="],
 
     "@nats-io/nats-core": ["@nats-io/nats-core@3.4.0", "", { "dependencies": { "@nats-io/nkeys": "2.0.3", "@nats-io/nuid": "3.0.0" } }, "sha512-QMDM86EUNm+wudlKC67HLar/KHHQUvJGLfb4jbahje3pUk3K9afeck9fwsxBZF0eUFox6T/TA6m/t+lQqf+QsQ=="],
 
